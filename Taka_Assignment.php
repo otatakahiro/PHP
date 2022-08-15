@@ -7,9 +7,9 @@
     <title>Document</title>
 </head>
 <body>
-    <form metho="POST" action="<?php echo $_SERVER["PHP_SELF"];?>">
+    <form method="POST" action="<?php echo $_SERVER["PHP_SELF"];?>">
         <input type="text" name="fname" placeholder="What is your first name?">
-        <input type="text" name="lname" placeholder="What is your last name?">
+        <input type="text" name="lname" placeholder="What is your last name?"></br>
         <input type="text" name="marks" placeholder="Marks">
         <select name="selects">
             <option disabled selected value="">Select your program</option>
@@ -17,7 +17,7 @@
             <option>UI/UX</option>
             <option>Desital Marketing</option>
             <option>IBM</option>
-        </select>
+        </select><br>
         <button type="submit">Submit</button>
     </form>
 
@@ -28,23 +28,26 @@
             private $marks;
             private $selects;
 
-            function __construct($fname,$lname,$marks,$selects)
+            function __construct($fname, $lname, $marks, $selects)
             {
-                $this -> fname;
-                $this -> lname;
-                $this -> marks;
-                $this -> selects;
+                $this -> fname = $fname;
+                $this -> lname = $lname;
+                $this -> marks = $marks;
+                $this -> selects = $selects;
             }
 
             function avg(){
                 $sum = 0;
+                $avg = 0;
 
                 foreach ($this -> marks as $mark){
                     $sum += $mark;
                 }
                 
                 if (count($this -> marks) != 0) {
-                    echo $sum / count($this -> marks);
+                    $avg = $sum / count($this -> marks);
+
+                    return ($avg . 2);
                 }
             }
 
@@ -60,17 +63,51 @@
                     if($min >= $value) {
                         $min = $value;
                     }
-                }
 
-                echo $max, $min;
+                   
+                }
+                return [$max, $min]; 
             }
 
             function details() {
-                
+                echo "<h2>";
+                echo $this -> fname." ".$this -> lname."</br>";
+                foreach ($this -> marks as $value) {
+                    echo $value." ";
+                }
+                echo "<br>".$this -> selects;
+                echo "</h2>";
             }
         }
 
-        switch (){
+        $fname = "";
+        $lname = "";
+        $marks = [];
+        $selects = "";
+
+        switch ($_SERVER['REQUEST_METHOD']){
+            case "POST":
+                $fname = $_POST['fname'];
+                $lname = $_POST['lname'];
+                $marks = explode("," , $_POST['marks']);
+                $selects = $_POST['selects'];
+            break;
+
+            case "GET":
+                echo "<h1> WELCOME!! </h1>";
+            break;
+        }
+
+
+        if ($_SERVER['REQUEST_METHOD'] == "POST"){
+            $Taka = new students($fname,$lname,$marks,$selects);
+    
+            echo "<h2>Your average : ".round(($Taka->avg()), 2)."</h2>";
+            echo "<h2>Your Max score : ".round(($Taka->maxmin())[0], 2)."</h2>";
+            echo "<h2>Your Min score :".round(($Taka->maxmin())[1], 2)."</h2>"."</br>";
+
+            echo "<h2 style='color : blue'>Your details</h2>";
+            echo $Taka->details();
 
         }
     ?>
